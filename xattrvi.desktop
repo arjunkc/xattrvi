@@ -1,7 +1,8 @@
 [Desktop Entry]
 Name=xattrvi
-Exec=/opt/bin/xattrvi/xattrvi --editor vim %u
-Terminal=true
+#Exec=/opt/bin/xattrvi/xattrvi --hide-undecodable --editor 'vim -c "set shell=/bin/bash"' %u
+Exec=/opt/bin/xattrvi/xattrvi --editor 'gvim --nofork' %u
+Terminal=false
 Type=Application
 StartupNotify=true
 MimeType=inode/directory;application/octet-stream;text/plain;application/pdf;
