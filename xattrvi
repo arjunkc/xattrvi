@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser(description='xattrvi - modify xattributes of fi
 parser.add_argument('-e', '--encoding', action='store', dest='stdenc', type=str, default='utf-8', help='encoding to be used for value-decoding, defaults to utf-8')
 parser.add_argument('--hide-undecodable', action='store_true', default=False, dest='show_undecodable', help='hide entries whose value could not be decoded properly')
 parser.add_argument('filename', action='store', type=str, default=None, help='file that needs to get modified')
-parser.add_argument('--editor', action='store', type=str, dest='editor', help='use this particular editor')
+parser.add_argument('--editor', action='store', type=str, dest='editor', default=os.environ.get('EDITOR') or 'nano', help='use this particular editor')
 
 args = parser.parse_args(sys.argv[1:])
 
@@ -118,16 +118,15 @@ with open(tmpfile.name, 'w') as f:
 		f.write("# attributes in other namespaces:\n\n")
 		f.write("\n#".join([ "{0:10}   : {1}".format(key, value) for key, value in otherxattrs]))
 
-
-# let the user change those attributes
+# code for editor quirks
 if re.findall('gvim',args.editor):
-    # needs special nofork for subprocess to wait for gvim to return
-    retval = subprocess.call(['gvim','--nofork', tmpfile.name])
+    # needs special nofork for subprocess to wait for gvim to return. simply adds the nofork to argument. gvim allows for repeated arguments.
+    retval = subprocess.call([args.editor,'--nofork', tmpfile.name])
 else:
-    retval = subprocess.call([args.editor or os.environ.get('EDITOR') or 'nano', tmpfile.name])
+    retval = subprocess.call([args.editor, tmpfile.name])
 
 if retval != 0:
-	print("!! Your editor {0} exited nonzero with {1}, removing stale tmpfile and aborting".format(args.editor or os.environ['EDITOR'], retval), file=sys.stderr)
+	print("!! Your editor {0} exited nonzero with {1}, removing stale tmpfile and aborting".format(args.editor, retval), file=sys.stderr)
 	sys.exit(1)
 
 
