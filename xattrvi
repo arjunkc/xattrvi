@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, os, subprocess, tempfile, argparse, codecs, re
+import sys, os, subprocess, tempfile, argparse, codecs, shlex
 
 parser = argparse.ArgumentParser(description='xattrvi - modify xattributes of files the simple way')
 
@@ -119,11 +119,8 @@ with open(tmpfile.name, 'w') as f:
 		f.write("\n#".join([ "{0:10}   : {1}".format(key, value) for key, value in otherxattrs]))
 
 # code for editor quirks
-if re.findall('gvim',args.editor):
-    # needs special nofork for subprocess to wait for gvim to return. simply adds the nofork to argument. gvim allows for repeated arguments.
-    retval = subprocess.call([args.editor,'--nofork', tmpfile.name])
-else:
-    retval = subprocess.call([args.editor, tmpfile.name])
+args.editor = shlex.split(args.editor)
+retval = subprocess.call(args.editor+ [tmpfile.name])
 
 if retval != 0:
 	print("!! Your editor {0} exited nonzero with {1}, removing stale tmpfile and aborting".format(args.editor, retval), file=sys.stderr)
