@@ -118,9 +118,8 @@ with open(tmpfile.name, 'w') as f:
 		f.write("# attributes in other namespaces:\n\n")
 		f.write("\n#".join([ "{0:10}   : {1}".format(key, value) for key, value in otherxattrs]))
 
-# code for editor quirks
 args.editor = shlex.split(args.editor)
-retval = subprocess.call(args.editor+ [tmpfile.name])
+retval = subprocess.call(args.editor + [tmpfile.name])
 
 if retval != 0:
 	print("!! Your editor {0} exited nonzero with {1}, removing stale tmpfile and aborting".format(args.editor, retval), file=sys.stderr)
